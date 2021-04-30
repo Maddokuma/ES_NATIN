@@ -1,0 +1,42 @@
+{% extends "layouts/layout.html" %}
+
+{% block content %}
+<style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    td, th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+    </style>
+
+<legend>Resultaten Overzicht</legend>
+    <table>
+        <thead>
+            <tr>
+            <th>ID</th>
+            <th>student</th>
+            <th>Feedback</th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for feedback in feedbacks %}
+            <tr>
+                <td>{{ feedback.id }}</td>
+                <td>{{ feedback.student.gebruikersnaam }}</td>
+                <td>{{ feedback.feedbackinfo }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+  </table>
+
+{% endblock content %}

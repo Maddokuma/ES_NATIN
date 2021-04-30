@@ -1,0 +1,52 @@
+{% extends "layouts/layout.html" %}
+
+{% block content %}
+<style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    td, th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+    </style>
+
+<legend>Resultaten Overzicht</legend>
+    <table>
+        <thead>
+            <tr>
+            <th>ID</th>
+            <th>Exam</th>
+            <th>Vak</th>
+            <th>Klas</th>
+            <th>Datum</th>
+            <th>Duur</th>
+            <th>Actie</th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for exam in examen %}
+            <tr>
+                <td>{{ exam.id }}</td>
+                <td>{{ exam.examnaam }}</td>
+                <td>{{ exam.vak }}</td>
+                <td>{{ exam.klas }}</td>
+                <td>{{ exam.datum.strftime('%d-%m-%Y') }}</td>
+                <td>{{ exam.duur }}</td>
+                <td>
+                    <a class="btn btn-primary" href="{{ url_for('resultaten_view', examid=exam.id ) }}">Cijfers Bekijken</a>
+                </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+  </table>
+
+{% endblock content %}

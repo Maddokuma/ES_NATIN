@@ -1,0 +1,48 @@
+{% extends "layouts/layout.html" %}
+
+{% block content %}
+
+<div class="content-section">
+    <form action="" method="POST">
+        {{ form.hidden_tag() }}
+
+        <fieldset class="form-group">
+            <legend>{{ legend }}</legend>
+            <div class="form-group">
+                {{ form.vraaginfo.label(class="form-control-label") }}
+                {{ form.vraaginfo(class="form-control form-control-lg") }}
+            </div>
+            <div class="form-group">
+                {{ form.keuzeA.label(class="form-control-label") }}
+                {{ form.keuzeA(class="form-control form-control-lg") }}
+            </div>
+            <div class="form-group">
+                {{ form.keuzeB.label(class="form-control-label") }}
+                {{ form.keuzeB(class="form-control form-control-lg") }}
+            </div>
+            <div class="form-group">
+                {{ form.keuzeC.label(class="form-control-label") }}
+                {{ form.keuzeC(class="form-control form-control-lg") }}
+            </div>
+            <div class="form-group">
+                {{ form.keuzeD.label(class="form-control-label") }}
+                {{ form.keuzeD(class="form-control form-control-lg") }}
+            </div>
+            <div class="form-group">
+                {{ form.antwoord.label(class="form-control-label") }}
+                {{ form.antwoord(class="form-control form-control-lg") }}
+            </div>
+            <div class="form-group">
+                {{ form.punt.label(class="form-control-label") }}
+                {{ form.punt(class="form-control form-control-lg") }}
+            </div>
+            <div class="form-group">
+                {{ form.toevoegen(class="btn btn-outline-info") }}
+                <a class="btn btn-primary" href="{{ url_for('exam_view', examid=examinfo.id) }}">Terug</a>
+                
+            </div>
+        </fieldset>
+    </form>
+</div>
+
+{% endblock content %}

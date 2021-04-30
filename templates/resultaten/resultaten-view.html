@@ -1,0 +1,62 @@
+{% extends "layouts/layout.html" %}
+
+{% block content %}
+<style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    td, th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+    </style>
+
+<legend>Studenten Cijfers</legend>
+
+<div class="card" style="width: 70rem;">
+    <div class="card-body">
+        <h5 class="card-title">Exam:{{ examinfo.examnaam }}</h5>
+        <div class="row">
+            <div class="col-6 col-sm-3"><p class="card-text mb-1">Vak: {{ examinfo.vak }}</p></div>
+            <div class="col-6 col-sm-3"><p class="card-text mb-1">Klas: {{ examinfo.klas }}</p></div>
+            <div class="col-6 col-sm-3"><p class="card-text mb-1">Datum: {{ examinfo.datum.strftime('%d-%m-%Y') }}</p></div>
+            <div class="col-6 col-sm-3"><p class="card-text mb-1">Duur: {{ examinfo.duur }}</p></div>   
+          </div>
+    </div>
+  </div>
+
+<legend>Cijfers</legend>
+
+<table>
+    <thead>
+        <tr>
+          <th>ID</th>
+          <th>Student</th>
+          <th>Cijfers</th>
+          <th>Actie</th>
+        </tr>
+    </thead>
+    <tbody>
+      {% for resultaat in resultaten %}
+        <tr>
+            <td>{{ resultaat.id }}</td>
+            <td>{{ resultaat.student.gebruikersnaam }}</td>
+            <td>{{ resultaat.cijfer }}</td>
+
+            <td>
+                <a class="btn btn-primary" href="{{ url_for('resultaten_beantwoord', resultaatid=resultaat.id ) }}">Zie Antwoorden</a>
+            </td>
+        </tr>
+      {% endfor %}  
+    </tbody>
+  </table>
+
+{% endblock content %}

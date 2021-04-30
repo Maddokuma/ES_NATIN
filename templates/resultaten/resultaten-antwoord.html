@@ -1,0 +1,72 @@
+{% extends "layouts/layout.html" %}
+
+{% block content %}
+<style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    td, th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+    </style>
+
+<legend>Student Antwoorden</legend>
+
+<div class="card" style="width: 70rem;">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-6 col-sm-3"> <h5 class="card-title">Exam: {{ resultaat.exam.examnaam }}</h5></div>
+            <div class="col-6 col-sm-3"><h5 class="card-title">Student: {{ resultaat.student.gebruikersnaam }}</h5></div>
+            <div class="col-6 col-sm-3"><h5 class="card-title">Cijfers: {{ resultaat.cijfer }}</h5></div>
+          </div>
+        <div class="row">
+            <div class="col-6 col-sm-3"><p class="card-text mb-1">Vak: {{ resultaat.exam.vak }}</p></div>
+            <div class="col-6 col-sm-3"><p class="card-text mb-1">Klas: {{ resultaat.exam.klas }}</p></div>
+            <div class="col-6 col-sm-3"><p class="card-text mb-1">Datum: {{ resultaat.exam.datum.strftime('%d-%m-%Y') }}</p></div>
+            <div class="col-6 col-sm-3"><p class="card-text mb-1">Duur: {{ resultaat.exam.duur }}</p></div>   
+          </div>
+    </div>
+  </div>
+
+<legend>Vragen en Antwoorden</legend>
+<table>
+    <thead>
+        <tr>
+        <th>ID</th>
+        <th>Vraag</th>
+        <th>Keuze A</th>
+        <th>Keuze B</th>
+        <th>Keuze C</th>
+        <th>Keuze D</th>
+        <th>Antwoord</th>
+        <th>Beantwoord</th>
+        <th>Punten</th>
+        </tr>
+    </thead>
+    <tbody>
+      {% for beantwoord in beantwoorden %}
+        <tr>
+            <td>{{ beantwoord.id }}</td>
+            <td>{{ beantwoord.vraag.vraaginfo }}</td>
+            <td>{{ beantwoord.vraag.keuze_a }}</td>
+            <td>{{ beantwoord.vraag.keuze_b }}</td>
+            <td>{{ beantwoord.vraag.keuze_c }}</td>
+            <td>{{ beantwoord.vraag.keuze_d }}</td>
+            <td>{{ beantwoord.vraag.antwoord }}</td>
+            <td>{{ beantwoord.beantwoordkeuze }}</td>
+            <td>{{ beantwoord.punten }}</td>
+          </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock content %}

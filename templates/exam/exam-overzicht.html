@@ -1,0 +1,236 @@
+{% extends "layouts/layout.html" %}
+
+{% block content %}
+<style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    .row {
+      margin-left:-5px;
+      margin-right:-5px;
+    }
+      
+    .column {
+      float: left;
+      width: 50%;
+      padding: 5px;
+    }
+    
+    /* Clearfix (clear floats) */
+    .row::after {
+      content: "";
+      clear: both;
+      display: table;
+    }
+    
+    table {
+      border-collapse: collapse;
+      border-spacing: 0;
+      width: 100%;
+      border: 1px solid #ddd;
+    }
+    
+    th, td {
+      text-align: left;
+      padding: 16px;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    .tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+    }
+
+    /* Style the buttons inside the tab */
+    .tab button {
+        background-color: inherit;
+        float: left;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        transition: 0.3s;
+        font-size: 17px;
+    }
+
+    /* Change background color of buttons on hover */
+    .tab button:hover {
+        background-color: #ddd;
+    }
+
+    /* Create an active/current tablink class */
+    .tab button.active {
+        background-color: #ccc;
+    }
+
+    /* Style the tab content */
+    .tabcontent {
+        display: none;
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-top: none;
+    }
+
+    /* Style the close button */
+    .topright {
+        float: right;
+        cursor: pointer;
+        font-size: 28px;
+    }
+
+    .topright:hover {color: red;}
+</style>
+
+<legend>Exam Overzicht</legend>
+<p> Exam
+    <a href="{{ url_for('exam_add') }}">Toevoegen</a>
+</p>
+<div class="tab">
+  <button class="tablinks" onclick="openStatus(event, 'Gesloten')" id="defaultOpen">Gesloten</button>
+  <button class="tablinks" onclick="openStatus(event, 'Open')">Open</button>
+</div>
+
+<div id="Gesloten" class="tabcontent">
+  <span onclick="this.parentElement.style.display='none'" class="topright">&times</span>
+  <table>
+    <thead>
+        <tr>
+        <th>ID</th>
+        <th>Exam</th>
+        <th>Vak</th>
+        <th>Klas</th>
+        <th>Datum</th>
+        <th>Duur</th>
+        <th>Actie</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for gesloten in geslotens %}
+            <tr>
+                <td>{{ gesloten.id }}</td>
+                <td>{{ gesloten.examnaam }}</td>
+                <td>{{ gesloten.vak }}</td>
+                <td>{{ gesloten.klas }}</td>
+                <td>{{ gesloten.datum.strftime('%d-%m-%Y') }}</td>
+                <td>{{ gesloten.duur }}</td>
+                <td>
+                    <div class="dropdown">
+                        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">Actie</a>
+                    
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <li><a class="dropdown-item" href="{{ url_for('exam_view', examid=gesloten.id) }}">Meer</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('exam_bewerken', examid=gesloten.id) }}">Bewerken</a></li>
+                        <li> <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#verwijderenExamGeslotentModal">Verwijderen</button> </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <!-- Modal -->
+            <div class="modal fade" id="verwijderenExamGeslotentModal" tabindex="-1" aria-labelledby="verwijderenExamGeslotentModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="verwijderenExamGeslotentModalLabel">Exam Verwijderen?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <form action="{{ url_for('exam_verwijderen', examid=gesloten.id) }}" method="POST">
+                      <input class='btn btn-danger' type="submit"  value="Verwijderen">
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+        </tr>
+    </tbody>
+</table>
+</div>
+
+<div id="Open" class="tabcontent">
+  <span onclick="this.parentElement.style.display='none'" class="topright">&times</span>
+  <table>
+    <thead>
+        <tr>
+        <th>ID</th>
+        <th>Exam</th>
+        <th>Vak</th>
+        <th>Klas</th>
+        <th>Datum</th>
+        <th>Duur</th>
+        <th>Actie</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for open in opens %}
+            <tr>
+                <td>{{ open.id }}</td>
+                <td>{{ open.examnaam }}</td>
+                <td>{{ open.vak }}</td>
+                <td>{{ open.klas }}</td>
+                <td>{{ open.datum.strftime('%d-%m-%Y') }}</td>
+                <td>{{ open.duur }}</td>
+                <td>
+                    <div class="dropdown">
+                        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">Actie</a>
+                    
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <li><a class="dropdown-item" href="{{ url_for('exam_view', examid=open.id) }}">Meer</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('exam_bewerken', examid=open.id) }}">Bewerken</a></li>
+                        <li> <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#verwijderenExamOpentModal"> Verwijderen</button> </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <!-- Modal -->
+            <div class="modal fade" id="verwijderenExamOpentModal" tabindex="-1" aria-labelledby="verwijderenExamOpentModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="verwijderenExamOpentModalLabel">Exam Verwijderen?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <form action="{{ url_for('exam_verwijderen', examid=open.id) }}" method="POST">
+                      <input class='btn btn-danger' type="submit"  value="Verwijderen">
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+        </tr>
+    </tbody>
+</table>
+</div>
+
+<script>
+function openStatus(evt, status) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(status).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+
+// Get the element with id="defaultOpen" and click on it
+document.getElementById("defaultOpen").click();
+</script>
+{% endblock content %}

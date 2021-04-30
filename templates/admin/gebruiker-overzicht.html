@@ -1,0 +1,225 @@
+{% extends "layouts/layout.html" %}
+
+{% block content %}
+<style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    .row {
+      margin-left:-5px;
+      margin-right:-5px;
+    }
+      
+    .column {
+      float: left;
+      width: 50%;
+      padding: 5px;
+    }
+    
+    /* Clearfix (clear floats) */
+    .row::after {
+      content: "";
+      clear: both;
+      display: table;
+    }
+    
+    table {
+      border-collapse: collapse;
+      border-spacing: 0;
+      width: 100%;
+      border: 1px solid #ddd;
+    }
+    
+    th, td {
+      text-align: left;
+      padding: 16px;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+  .tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+  }
+
+  /* Style the buttons inside the tab */
+  .tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
+  }
+
+  /* Change background color of buttons on hover */
+  .tab button:hover {
+    background-color: #ddd;
+  }
+
+  /* Create an active/current tablink class */
+  .tab button.active {
+    background-color: #ccc;
+  }
+
+  /* Style the tab content */
+  .tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+  }
+
+  /* Style the close button */
+  .topright {
+    float: right;
+    cursor: pointer;
+    font-size: 28px;
+  }
+
+  .topright:hover {color: red;}
+</style>
+
+<legend style="margin-top: 2%;" >Gebruikers Overzicht</legend>
+<p> Gebruikers
+    <a class="btn btn-primary" style="margin-left: 200px;" href="{{ url_for('gebruiker_add') }}">Toevoegen</a>
+    <a class="btn btn-primary" href="{{ url_for('gebruikers_file') }}">File</a>
+</p>
+
+<div class="tab">
+  <button class="tablinks" onclick="openGebruikers(event, 'Admin')" id="defaultOpen">Admin</button>
+  <button class="tablinks" onclick="openGebruikers(event, 'Student')">Student</button>
+</div>
+
+<div id="Admin" class="tabcontent">
+  <span onclick="this.parentElement.style.display='none'" class="topright">&times</span>
+  <h3>Admin</h3>
+   <table>
+          <thead>
+              <tr>
+                  <th>ID</th>
+                  <th>Gebruikersnaam</th>
+                  <th>Rol</th>
+                  <th>Actie</th>
+              </tr>
+          </thead>
+          <tbody>
+            {% for admin in admins %}
+            <tr>
+                <td>{{ admin.id }}</td>
+                <td>{{ admin.gebruikersnaam }}</td>
+                <td>{{ admin.rol }}</td>
+                <td>
+                    <div class="dropdown">
+                        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">Actie</a>
+        
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <li><a class="dropdown-item" href="{{ url_for('gebruiker_bewerken', gebruiker_id=admin.id) }}">Bewerken</a></li>
+                        <li> <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#verwijderenAdminModal"> Verwijderen</button> </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <!-- Modal -->
+            <div class="modal fade" id="verwijderenAdminModal" tabindex="-1" aria-labelledby="verwijderenAdminModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="verwijderenAdminModalLabel">Admin Verwijderen?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <form action="{{ url_for('gebruiker_verwijderen', gebruikerid=admin.id) }}" method="POST">
+                      <input class='btn btn-danger' type="submit"  value="Verwijderen">
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+        </tbody>
+      </table>
+</div>
+
+<div id="Student" class="tabcontent">
+  <span onclick="this.parentElement.style.display='none'" class="topright">&times</span>
+  <h3>Student</h3>
+  <table>
+        <thead>
+              <tr>
+                <th>ID</th>
+                <th>Gebruikersnaam</th>
+                <th>Rol</th>
+                <th>Actie</th>
+              </tr>
+          </thead>
+          <tbody>
+            {% for student in studenten %}
+            <tr>
+                <td>{{ student.id }}</td>
+                <td>{{ student.gebruikersnaam }}</td>
+                <td>{{ student.rol }}</td>
+                <td>
+                    <div class="dropdown">
+                        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">Actie</a>
+        
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <li><a class="dropdown-item" href="{{ url_for('gebruiker_bewerken', gebruiker_id=student.id) }}">Bewerken</a></li>
+                        <li> <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#verwijderenStudentModal"> Verwijderen</button> </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <!-- Modal -->
+            <div class="modal fade" id="verwijderenStudentModal" tabindex="-1" aria-labelledby="verwijderenStudentModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="verwijderenStudentModalLabel">Student Verwijderen?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <form action="{{ url_for('student_verwijderen', gebruikerid=student.id) }}" method="POST">
+                      <input class='btn btn-danger' type="submit"  value="Verwijderen">
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+        </tbody>
+      </table>
+</div>
+
+<script>
+function openGebruikers(evt, gebruiker) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(gebruiker).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+
+// Get the element with id="defaultOpen" and click on it
+document.getElementById("defaultOpen").click();
+</script>
+
+{% endblock content %}

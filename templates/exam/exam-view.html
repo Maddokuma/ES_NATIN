@@ -1,0 +1,96 @@
+{% extends "layouts/layout.html" %}
+
+{% block content %}
+<style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    td, th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+    </style>
+
+<legend>Exam Gegevens</legend>
+
+<div class="card" style="width: 70rem;">
+    <div class="card-body">
+        <h5 class="card-title">Exam: {{ examinfo.examnaam }}</h5>
+        <div class="row">
+            <div class="col-6 col-sm-3"><p class="card-text mb-1">Vak: {{ examinfo.vak }}</p></div>
+            <div class="col-6 col-sm-3"><p class="card-text mb-1">Klas: {{ examinfo.klas }}</p></div>
+            <div class="col-6 col-sm-3"><p class="card-text mb-1">Datum: {{ examinfo.datum.strftime('%d-%m-%Y') }}</p></div>
+            <div class="col-6 col-sm-3"><p class="card-text mb-1">Duur: {{ examinfo.duur }}</p></div>   
+          </div>
+    </div>
+  </div>
+
+<legend>Vragen / <a href="{{ url_for('vraag_add', examid=examinfo.id) }}">Toevoegen</a> / <a href="{{ url_for('vraag_file', examid=examinfo.id) }}">File</a></legend>
+<table>
+    <thead>
+        <tr>
+        <th>ID</th>
+        <th>Vraag</th>
+        <th>Keuze A</th>
+        <th>Keuze B</th>
+        <th>Keuze C</th>
+        <th>Keuze D</th>
+        <th>Antwoord</th>
+        <th>Punten</th>
+        <th>Actie</th>
+        </tr>
+    </thead>
+    <tbody>
+      {% for vraag in vragen  %}
+        <tr>
+            <td>{{ vraag.id }}</td>
+            <td>{{ vraag.vraaginfo }}</td>
+            <td>{{ vraag.keuze_a }}</td>
+            <td>{{ vraag.keuze_b }}</td>
+            <td>{{ vraag.keuze_c }}</td>
+            <td>{{ vraag.keuze_d }}</td>
+            <td>{{ vraag.antwoord }}</td>
+            <td>{{ vraag.punt }}</td>
+            <td>
+                <div class="dropdown">
+                    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">Actie</a>
+                  
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                      <li><a class="dropdown-item" href="{{ url_for('vraag_bewerken', vraagid=vraag.id) }}">Bewerken</a></li>
+                      <li> <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#verwijderenVraagtModal">Verwijderen</button> </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <!-- Modal -->
+            <div class="modal fade" id="verwijderenVraagtModal" tabindex="-1" aria-labelledby="verwijderenVraagtModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="verwijderenVraagtModalLabel">Exam Verwijderen?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <form action="{{ url_for('vraag_verwijderen', vraagid=vraag.id) }}" method="POST">
+                      <input class='btn btn-danger' type="submit"  value="Verwijderen">
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+        {% endfor %}  
+    </tbody>
+  </table>
+
+{% endblock content %}

@@ -1,0 +1,22 @@
+{% extends "layouts/layout.html" %}
+
+{% block content %}
+
+<div class="content-section"  style="width: 750px; ">
+    <form action="" method="POST" enctype='multipart/form-data'>
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <legend>Gebruiker File</legend>
+            <div class="form-group">
+                {{ form.upload.label(class="form-control-label") }}
+                {{ form.upload(class="form-control form-control-lg") }}
+            </div>
+            <div class="form-group">
+                {{ form.toevoegen(class="btn btn-success m-2") }}
+                <a class="btn btn-primary" href="{{ url_for('gebruiker_overzicht') }}">Terug</a>
+            </div>
+        </fieldset>
+    </form>
+</div>
+
+{% endblock content %}
