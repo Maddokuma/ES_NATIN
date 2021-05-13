@@ -347,7 +347,7 @@ def pdf(studentid, resultaatid):
     response = make_response(pdf)
     response.headers["Content-Type"] = 'application/pdf'
     response.headers["Content-Disposition"] = 'inline; filename=bevestiging.pdf'
-    return response
+    return response, redirect(url_for('student_eind', studentid=student.id))
 
 @app.route('/Student/<int:studentid>/Eind')
 def student_eind(studentid):
