@@ -266,9 +266,6 @@ def vraag_file(examid):
         return redirect(url_for('exam_view', examid=exam.id))
     return render_template('exam/vraag-file.html', title='Vragen-Toevoegen', form=form, examinfo=examinfo)
 
-
-
-
 # Resultaten 
 @app.route('/Admin/Resultaten')
 def resultaten_overzicht():
@@ -281,9 +278,6 @@ def resultaten_view(examid):
     examinfo = Exam.query.get(examid)
     resultaten = Resultaat.query.filter_by(exam_id=examid).all()
     return render_template('resultaten/resultaten-view.html', title='Admin-Resultaten', examinfo=examinfo, resultaten=resultaten)
-
-
-
 
 @app.route('/Admin/Resultaten/Beantwoord/<int:resultaatid>')
 def resultaten_beantwoord(resultaatid):
@@ -341,6 +335,7 @@ def quiz(examid, studentid):
         resultaat.cijfer=newString2
         db.session.commit()
         return redirect(url_for('pdf', studentid=student.id, resultaatid=resultaat.id))
+        # return redirect(url_for('student_eind', studentid=student.id))
     return render_template('student/quiz.html', title='QUIZ', quizvragen=quizvragen , form=form, exam=exam)
 
 @app.route('/pdf/<int:studentid>/<int:resultaatid>')
@@ -351,7 +346,7 @@ def pdf(studentid, resultaatid):
     pdf = pdfkit.from_string(rendered, False)
     response = make_response(pdf)
     response.headers["Content-Type"] = 'application/pdf'
-    response.headers["Content-Disposition"] = 'inline; filename=output.pdf'
+    response.headers["Content-Disposition"] = 'inline; filename=bevestiging.pdf'
     return response
 
 @app.route('/Student/<int:studentid>/Eind')

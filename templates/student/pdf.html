@@ -1,2 +1,5 @@
 <h1>Bevestiging van het afgelegde exam</h1>
-<h2>Student: {{ student.gebruikersnaam }} heeft {{ resultaat.exam.examnaam }} gemaakt.</h2>
+<h2>Student:    {{ student.gebruikersnaam }} </h2>
+<h2>Exam:   {{ resultaat.exam.examnaam }} </h2>
+<p>Dit is een bewijs dat sudent heeft een exam gemaakt.</p>
+<a href="{{ url_for('student_eind', studentid=student.id) }}">UITLOGGEN</a>
