@@ -5,6 +5,7 @@ from es_natin import app, db, bcrypt
 from es_natin.forms import GebruikerForm, InloggenForm, GebruikersFileForm, ExamForm, VraagForm, VragenFileForm, QuizForm, FeedbackForm
 from es_natin.models import Gebruiker, Exam, Vraag, Resultaat, Beantwoord, Feedback
 from flask_login import login_user, current_user, logout_user
+from sqlalchemy.sql import func
 
 
 
@@ -327,9 +328,13 @@ def quiz(examid, studentid):
                         beantwoordk = Beantwoord(beantwoordkeuze=beantwoord, punten="0", vraag_id= quizvraag.id, resultaat_id=resultaat.id)
                         db.session.add(beantwoordk)
                         db.session.commit()
-        # beantwoordpunten = Beantwoord.query.filter_by(resultaat_id=resultaat.id).all()
-        # bpunten = beantwoordpunten.punten
-        # print(sum(bpunten))
+        result = db.session.query(func.sum(Beantwoord.punten)).filter(Beantwoord.resultaat_id== resultaat.id).all()
+        myString = str(result)
+        newString1 = myString.replace('[(', '')
+        newString2 = newString1.replace(',)]', '')
+        print("Sum of all the elements of an array: " + newString2)
+        resultaat.cijfer=newString2
+        db.session.commit()
         return redirect(url_for('student_eind', studentid=student.id))
     return render_template('student/quiz.html', title='QUIZ', quizvragen=quizvragen , form=form, exam=exam)
 
