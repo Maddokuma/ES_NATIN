@@ -1,11 +1,15 @@
 from io import TextIOWrapper
 import csv
-from flask import render_template, url_for, flash, redirect, request
+from flask import render_template, url_for, flash, redirect, request, make_response
+from flask.wrappers import Response
+from sqlalchemy.sql.expression import false
+from werkzeug.utils import html
 from es_natin import app, db, bcrypt
 from es_natin.forms import GebruikerForm, InloggenForm, GebruikersFileForm, ExamForm, VraagForm, VragenFileForm, QuizForm, FeedbackForm
 from es_natin.models import Gebruiker, Exam, Vraag, Resultaat, Beantwoord, Feedback
 from flask_login import login_user, current_user, logout_user
 from sqlalchemy.sql import func
+import pdfkit 
 
 
 
@@ -45,8 +49,6 @@ def admin_home():
     aantgesl = Exam.query.filter_by(status="Gesloten").count()
     aantfeed = Feedback.query.count()
     return render_template('admin/home.html', title='Admin-Home', aantgeb=aantgeb, aantadm=aantadm, aantstu=aantstu, aantexam=aantexam, aantopen=aantopen, aantgesl=aantgesl, aantfeed=aantfeed)
-
-
 
 # Gebruikers 
 @app.route('/Admin/Gebruiker')
@@ -304,6 +306,7 @@ def quiz(examid, studentid):
     exam = Exam.query.get_or_404(examid)
     student = Gebruiker.query.get_or_404(studentid)
     resultaten = Resultaat.query.all()
+    # check als student al een examn heeft gemaakt
     if db.session.query(Resultaat.id).filter_by(student_id=student.id, exam_id=exam.id).scalar() is not None:
         # print('Student heeft een exam gemaakt')
         flash(f'Student heeft al exam gemaakt', 'success')
@@ -317,6 +320,7 @@ def quiz(examid, studentid):
     form = QuizForm()
     if form.validate_on_submit():
         beantwoorden = request.form.getlist('beantwoordkeuze')
+        # antwoorden opslagen
         for qz, quizvraag in enumerate(quizvragen):
             for beat, beantwoord in enumerate(beantwoorden):
                 if qz==beat:
@@ -328,6 +332,7 @@ def quiz(examid, studentid):
                         beantwoordk = Beantwoord(beantwoordkeuze=beantwoord, punten="0", vraag_id= quizvraag.id, resultaat_id=resultaat.id)
                         db.session.add(beantwoordk)
                         db.session.commit()
+        # cijfer
         result = db.session.query(func.sum(Beantwoord.punten)).filter(Beantwoord.resultaat_id== resultaat.id).all()
         myString = str(result)
         newString1 = myString.replace('[(', '')
@@ -335,8 +340,19 @@ def quiz(examid, studentid):
         print("Sum of all the elements of an array: " + newString2)
         resultaat.cijfer=newString2
         db.session.commit()
-        return redirect(url_for('student_eind', studentid=student.id))
+        return redirect(url_for('pdf', studentid=student.id, resultaatid=resultaat.id))
     return render_template('student/quiz.html', title='QUIZ', quizvragen=quizvragen , form=form, exam=exam)
+
+@app.route('/pdf/<int:studentid>/<int:resultaatid>')
+def pdf(studentid, resultaatid):
+    student = Gebruiker.query.get_or_404(studentid)
+    resultaat = Resultaat.query.get_or_404(resultaatid)
+    rendered = render_template("student/pdf.html", student=student, resultaat=resultaat)
+    pdf = pdfkit.from_string(rendered, False)
+    response = make_response(pdf)
+    response.headers["Content-Type"] = 'application/pdf'
+    response.headers["Content-Disposition"] = 'inline; filename=output.pdf'
+    return response
 
 @app.route('/Student/<int:studentid>/Eind')
 def student_eind(studentid):
@@ -347,7 +363,6 @@ def student_eind(studentid):
 def feedback_overzicht():
     feedbacks = Feedback.query.all()
     return render_template('feedback/feedback-overzicht.html', title='Admin-Feedback', feedbacks=feedbacks)
-
 
 @app.route('/Student/<int:studentid>/Feedback', methods=['GET', 'POST'])
 def feedback_toevoegen(studentid):
@@ -360,16 +375,3 @@ def feedback_toevoegen(studentid):
         flash(f'Feedback Toegevoerd', 'success')
         return redirect(url_for('student_eind', studentid=student.id))
     return render_template('feedback/feedback-add.html', title='Feedback', form=form, student=student)
-
-
-# @app.route('/Student/<int:studentid>/Feedback', methods=['GET', 'POST'])
-# def pdf_generate(studentid):
-#     student = Gebruiker.query.get_or_404(studentid)
-#     form = FeedbackForm()
-#     if form.validate_on_submit():
-#         feedback = Feedback(feedbackinfo=form.feedbackinfo.data, student_id=studentid)
-#         db.session.add(feedback)
-#         db.session.commit()
-#         flash(f'Feedback Toegevoerd', 'success')
-#         return redirect(url_for('student_eind', studentid=student.id))
-#     return render_template('feedback/feedback-add.html', title='Feedback', form=form, student=student)
