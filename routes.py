@@ -12,8 +12,6 @@ from sqlalchemy.sql import func
 import pdfkit 
 
 
-
-
 # INLOGGEN 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/inloggen', methods=['GET', 'POST'])
@@ -35,8 +33,6 @@ def inloggen():
 def uitloggen():
     logout_user()
     return redirect(url_for('inloggen'))
-
-
 
 # ADMIN Gebruikers
 @app.route('/Admin/Home')
@@ -86,9 +82,6 @@ def gebruiker_bewerken(gebruiker_id):
         form.rol.data = gebruiker.rol
     return render_template('admin/gebruiker-add.html', title='Admin Gebruiker Bewerken', form=form, legend='Gebruiker Bewerken')
 
-
-
-
 @app.route('/Admin/Gebruiker/<int:gebruikerid>/verwijderen', methods=['GET', 'POST'])
 def gebruiker_verwijderen(gebruikerid):
     gebruiker = Gebruiker.query.get_or_404(gebruikerid)
@@ -120,7 +113,6 @@ def student_verwijderen(gebruikerid):
     flash(f'Student Verwijderd', 'success')
     return redirect(url_for('gebruiker_overzicht'))
     
-
 @app.route('/gebruikers-file', methods=['GET', 'POST'])
 def gebruikers_file():
     form = GebruikersFileForm()
@@ -136,8 +128,6 @@ def gebruikers_file():
         flash(f'Gebruikers-File Toegevoerd', 'success')
         return redirect(url_for('gebruiker_overzicht'))
     return render_template('admin/gebruiker-file.html', title='Admin-Gebruiker', form=form)
-
-
 
                 # EXAM
 @app.route('/Admin/Examen')
@@ -327,15 +317,15 @@ def quiz(examid, studentid):
                         db.session.add(beantwoordk)
                         db.session.commit()
         # cijfer
-        result = db.session.query(func.sum(Beantwoord.punten)).filter(Beantwoord.resultaat_id== resultaat.id).all()
+        result = db.session.query(func.sum(Beantwoord.punten)).filter(Beantwoord.resultaat_id == resultaat.id).all()
         myString = str(result)
-        newString1 = myString.replace('[(', '')
-        newString2 = newString1.replace(',)]', '')
+        newString1 = myString.replace("[(Decimal('", '')
+        newString2 = newString1.replace("'),)]", '')
         print("Sum of all the elements of an array: " + newString2)
         resultaat.cijfer=newString2
         db.session.commit()
         return redirect(url_for('pdf', studentid=student.id, resultaatid=resultaat.id))
-        # return redirect(url_for('student_eind', studentid=student.id))
+        return redirect(url_for('student_eind', studentid=student.id))
     return render_template('student/quiz.html', title='QUIZ', quizvragen=quizvragen , form=form, exam=exam)
 
 @app.route('/pdf/<int:studentid>/<int:resultaatid>')
@@ -346,8 +336,9 @@ def pdf(studentid, resultaatid):
     pdf = pdfkit.from_string(rendered, False)
     response = make_response(pdf)
     response.headers["Content-Type"] = 'application/pdf'
-    response.headers["Content-Disposition"] = 'inline; filename=bevestiging.pdf'
-    return response, redirect(url_for('student_eind', studentid=student.id))
+    response.headers["Content-Disposition"] = 'attachment; filename=bevestiging.pdf'
+    return response 
+    # and redirect(url_for('student_eind', studentid=student.id))
 
 @app.route('/Student/<int:studentid>/Eind')
 def student_eind(studentid):

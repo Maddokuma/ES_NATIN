@@ -34,12 +34,12 @@ class Exam(db.Model):
 
 class Vraag(db.Model):
     id              = db.Column(db.Integer(), primary_key=True)
-    vraaginfo       = db.Column(db.Text(),    nullable=False)
-    keuze_a         = db.Column(db.Text(),    nullable=False)
-    keuze_b         = db.Column(db.Text(),    nullable=False)
-    keuze_c         = db.Column(db.Text(),    nullable=False)
-    keuze_d         = db.Column(db.Text(),    nullable=False)
-    antwoord        = db.Column(db.Text(),    nullable=False)
+    vraaginfo       = db.Column(db.Text(225),    nullable=False)
+    keuze_a         = db.Column(db.Text(225),    nullable=False)
+    keuze_b         = db.Column(db.Text(225),    nullable=False)
+    keuze_c         = db.Column(db.Text(225),    nullable=False)
+    keuze_d         = db.Column(db.Text(225),    nullable=False)
+    antwoord        = db.Column(db.Text(225),    nullable=False)
     punt            = db.Column(db.Integer(), nullable=False)
     exam_id         = db.Column(db.Integer(), db.ForeignKey('exam.id'), nullable=False)
     beantwoorden    = db.relationship('Beantwoord', backref='vraag', lazy=True)
@@ -49,7 +49,7 @@ class Vraag(db.Model):
 
 class Resultaat(db.Model):
     id           = db.Column(db.Integer(), primary_key=True)
-    cijfer       = db.Column(db.Integer(), nullable=True)
+    cijfer       = db.Column(db.String(20), nullable=True)
     student_id   = db.Column(db.Integer(), db.ForeignKey('gebruiker.id'),  nullable=False)
     exam_id      = db.Column(db.Integer(), db.ForeignKey('exam.id'), nullable=False)
     beantwoorden = db.relationship('Beantwoord', backref='resultaat', lazy=True)
@@ -59,7 +59,7 @@ class Resultaat(db.Model):
 
 class Beantwoord(db.Model):
     id           = db.Column(db.Integer(), primary_key=True)
-    beantwoordkeuze   = db.Column(db.String(),  nullable=False)
+    beantwoordkeuze   = db.Column(db.String(10),  nullable=False)
     punten       = db.Column(db.Integer(), nullable=False)
     vraag_id     = db.Column(db.Integer(), db.ForeignKey('vraag.id'), nullable=False)
     resultaat_id = db.Column(db.Integer(), db.ForeignKey('resultaat.id'), nullable=False)
@@ -69,7 +69,7 @@ class Beantwoord(db.Model):
 
 class Feedback(db.Model):
     id             = db.Column(db.Integer(), primary_key=True)
-    feedbackinfo   = db.Column(db.String(),  nullable=False)
+    feedbackinfo   = db.Column(db.String(90),  nullable=False)
     student_id     = db.Column(db.Integer(), db.ForeignKey('gebruiker.id'),  nullable=False)
 
     def __repr__(self):
